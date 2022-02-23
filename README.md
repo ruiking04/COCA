@@ -26,7 +26,7 @@ pip install -r requirements.txt
 This directory contains experiment parameters for all models on NAB, IOpsCompetition, UCR, SMAP datasets.
 
 ### `models`
-Source code of OCSVM, DeepSVDD, CPC, TS-TCC and COCA（oc_cl） models.
+Source code of OCSVM, DeepSVDD, CPC, TS-TCC and COCA（OC_CL） models.
 
 ### `results`
 Directory where the experiment results and checkpoint are saved.
