@@ -32,4 +32,4 @@ Source code of OCSVM, DeepSVDD, CPC, TS-TCC and COCA（OC_CL） models.
 Directory where the experiment results and checkpoint are saved.
 
 ## Disclosure
-This implementation is based on [Deep-SVDD-PyTorch](https://github.com/lukasruff/Deep-SVDD-PyTorch) and [Contrastive-Predictive-Coding-PyTorch](https://github.com/jefflai108/Contrastive-Predictive-Coding-PyTorch).
+This implementation is based on [Deep-SVDD-PyTorch](https://github.com/lukasruff/Deep-SVDD-PyTorch), [Contrastive-Predictive-Coding-PyTorch](https://github.com/jefflai108/Contrastive-Predictive-Coding-PyTorch) and [TS-TCC](https://github.com/emadeldeen24/TS-TCC)
