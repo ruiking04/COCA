@@ -96,8 +96,8 @@ else:
 
 # Aggregate statistics from full dataset
 all_train_score, all_test_score = [], []
-# for idx in tqdm(range(len(dt))):
-for idx in tqdm(range(1)):
+for idx in tqdm(range(len(dt))):
+# for idx in tqdm(range(1)):
     logger.debug(str(idx)+"time series")
     experiment_log_dir = os.path.join(log_dir, selected_dataset, '_' + str(idx))
     time_series, meta_data = dt[idx]
