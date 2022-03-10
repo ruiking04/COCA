@@ -35,7 +35,7 @@ class Config(object):
         # Specify COCA objective ("one-class" or "soft-boundary")
         self.objective = 'soft-boundary'
         # Specify loss objective ("arc1","arc2","mix","no_reconstruction", or "distance")
-        self.loss_type = 'mix'
+        self.loss_type = 'distance'
 
         self.augmentation = augmentations()
 

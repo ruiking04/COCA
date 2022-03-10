@@ -8,12 +8,10 @@ import argparse
 from models.TS_TCC.TS_utils import _logger, set_requires_grad
 from models.OC_CL.cl_dataloader import data_generator1, data_generator2, data_generator3
 from models.OC_CL.cl_trainer.trainer import Trainer, model_evaluate
-from models.TS_TCC.TS_utils import _calc_metrics, copy_Files
 from models.OC_CL.cl_network.model import base_Model
-from ts_datasets.ts_datasets.anomaly import NAB, IOpsCompetition, SMAP, SMD, UCR
+from ts_datasets.anomaly import NAB, IOpsCompetition, SMAP, SMD, UCR
 from tqdm import tqdm
 from sklearn.svm import OneClassSVM
-from models.TS_TCC.trainer.confusion_matrix import ConfusionMatrix
 from sklearn.metrics import precision_recall_fscore_support
 from merlion.evaluate.anomaly import TSADMetric, TSADScoreAccumulator as ScoreAcc, ScoreType
 from merlion.utils import TimeSeries

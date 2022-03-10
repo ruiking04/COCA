@@ -33,7 +33,7 @@ class Config(object):
         self.nu = 0.01
         self.detect_nu = 0.0005
         # Specify COCA objective ("one-class" or "soft-boundary")
-        self.objective = 'soft-boundary'
+        self.objective = 'one-class'
         # Specify loss objective ("arc1","arc2","mix","no_reconstruction", or "distance")
         self.loss_type = 'distance'
 
