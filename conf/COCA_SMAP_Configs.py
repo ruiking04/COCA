@@ -1,5 +1,7 @@
 class Config(object):
     def __init__(self):
+        # datasets
+        self.dataset = 'SMAP'
         # model configs
         self.input_channels = 25
         self.kernel_size = 8
@@ -33,6 +35,8 @@ class Config(object):
         # Anomaly Detection parameters
         self.nu = 0.01
         self.detect_nu = 0.0003
+        # Methods for determining thresholds ("fix","floating","one-anomaly")
+        self.threshold_determine = 'floating'
         # Specify COCA objective ("one-class" or "soft-boundary")
         self.objective = 'soft-boundary'
         # Specify loss objective ("arc1" ,"arc2", or "distance")

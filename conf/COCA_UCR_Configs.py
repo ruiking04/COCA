@@ -1,5 +1,7 @@
 class Config(object):
     def __init__(self):
+        # datasets
+        self.dataset = 'UCR'
         # model configs
         self.input_channels = 1
         self.kernel_size = 8
@@ -14,7 +16,8 @@ class Config(object):
         self.time_step = 1
 
         # training configs
-        self.num_epoch = 1
+        # If PA F1 metric is concerned, epoch=5. If RPA F1 metric is concerned, epoch=30
+        self.num_epoch = 30
         self.freeze_length_epoch = 2
         self.change_center_epoch = 1
         self.center_beta = 0.4
@@ -32,6 +35,10 @@ class Config(object):
         # Anomaly Detection parameters
         self.nu = 0.01
         self.detect_nu = 0.0005
+        # Methods for determining thresholds ("fix","floating","one-anomaly")
+        # In the experiment, choose the 'floating' mode, PA F1 can reach more than 70%, while RPA F1 is very low;
+        # Referring to Melion's method and choosing 'one-anomaly' mode, RPA F1 will exceed 35%.
+        self.threshold_determine = 'one-anomaly'
         # Specify COCA objective ("one-class" or "soft-boundary")
         self.objective = 'one-class'
         # Specify loss objective ("arc1","arc2","mix","no_reconstruction", or "distance")

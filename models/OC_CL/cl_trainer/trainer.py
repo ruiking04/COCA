@@ -23,7 +23,6 @@ def Trainer(model, model_optimizer, train_dl, test_dl, train_residual_label, tes
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(model_optimizer, 'min')
 
     all_epoch_train_loss, all_epoch_test_loss = [], []
-    all_epoch_train_f1, all_epoch_train_precision, all_epoch_train_recall = [], [], []
     all_epoch_test_f1, all_epoch_test_precision, all_epoch_test_recall = [], [], []
     center_train = torch.zeros(config.final_out_channels, device=device)
     center_test = torch.zeros(config.final_out_channels, device=device)
@@ -32,7 +31,6 @@ def Trainer(model, model_optimizer, train_dl, test_dl, train_residual_label, tes
     length = torch.tensor(0, device=device)  # radius R initialized with 0 by default.
     for epoch in range(1, config.num_epoch + 1):
         # Train and validate
-        # center = center_c2(train_dl, model, device, center, eps=config.center_eps)
         train_target, train_score, train_loss, length = model_train(model, model_optimizer, train_dl, center_train,
                                                                     length, config, device, epoch)
         test_target, test_score, test_loss, all_projection = model_evaluate(model, test_dl, center_train, length, config,
@@ -42,35 +40,12 @@ def Trainer(model, model_optimizer, train_dl, test_dl, train_residual_label, tes
             center_test = center_c2(train_dl, model, device, center_test, config, eps=config.center_eps)
         scheduler.step(train_loss)
         # according to scores to create predicting labels
-
-        # train_score, _ = ad_predict1(train_target, train_score, config)
         test_score, _ = ad_predict1(test_target, test_score, config)
-        # detect_nu = 100 * (1-config.detect_nu)
-        # train_target, train_predict = ad_predict(train_target, train_score, detect_nu, config)
-        # test_target, test_predict = ad_predict(test_target, test_score, detect_nu, config)
-        # # test_predict_copy = test_predict
-        # # test_target_copy = test_target
-        # test_predict_copy = train_predict
-        # test_target_copy = train_target
-        #
-        # train_target = TimeSeries.from_pd(pd.DataFrame(train_target))
-        # train_predict = TimeSeries.from_pd(pd.DataFrame(train_predict))
-        # test_predict = TimeSeries.from_pd(pd.DataFrame(test_predict))
-        # test_target = TimeSeries.from_pd(pd.DataFrame(test_target))
-        #
-        # train_score = accumulate_tsad_score(ground_truth=train_target, predict=train_predict)
-        # test_score = accumulate_tsad_score(ground_truth=test_target, predict=test_predict)
 
-        # train_f1 = train_score.f1(ScoreType.RevisedPointAdjusted)
-        # train_precision = train_score.precision(ScoreType.RevisedPointAdjusted)
-        # train_recall = train_score.recall(ScoreType.RevisedPointAdjusted)
         test_f1 = test_score.f1(ScoreType.RevisedPointAdjusted)
         test_precision = test_score.precision(ScoreType.RevisedPointAdjusted)
         test_recall = test_score.recall(ScoreType.RevisedPointAdjusted)
 
-        # logger.debug(f'\nEpoch : {epoch}\n'
-        #              f'Train Loss     : {train_loss:.4f}\t | \tTrain F1     : {train_f1:2.4f} | \tTrain precision     : {train_precision:2.4f} | \tTrain recall     : {train_recall:2.4f}\n'
-        #              f'test Loss     : {test_loss:.4f}\t  | \ttest F1     : {test_f1:2.4f}  | \ttest precision     : {test_precision:2.4f}  | \ttest recall     : {test_recall:2.4f}\n')
         logger.debug(f'\nEpoch : {epoch}\n'
                      f'Train Loss     : {train_loss:.4f}\t | \n'
                      f'test Loss     : {test_loss:.4f}\t  | \ttest F1     : {test_f1:2.4f}  | \ttest precision     : {test_precision:2.4f}  | \ttest recall     : {test_recall:2.4f}\n')
@@ -78,9 +53,6 @@ def Trainer(model, model_optimizer, train_dl, test_dl, train_residual_label, tes
         all_epoch_train_loss.append(train_loss.item())
         all_epoch_test_loss.append(test_loss.item())
 
-        # all_epoch_train_f1.append(train_f1)
-        # all_epoch_train_precision.append(train_precision)
-        # all_epoch_train_recall.append(train_recall)
         all_epoch_test_f1.append(test_f1)
         all_epoch_test_precision.append(test_precision)
         all_epoch_test_recall.append(test_recall)
@@ -205,10 +177,6 @@ def train(feature1, feature2, feature_dec1, feature_dec2, center, length, epoch,
     feature_dec2 = F.normalize(feature_dec2, dim=1)
     center = F.normalize(center, dim=1)
 
-    # distance1 = torch.sqrt(torch.sum((feature1 - center) ** 2, dim=1))
-    # distance2 = torch.sqrt(torch.sum((feature2 - center) ** 2, dim=1))
-    # distance_dec1 = torch.sqrt(torch.sum((feature_dec1 - center) ** 2, dim=1))
-    # distance_dec2 = torch.sqrt(torch.sum((feature_dec2 - center) ** 2, dim=1))
     distance1 = F.cosine_similarity(feature1, center, eps=1e-6)
     distance2 = F.cosine_similarity(feature2, center, eps=1e-6)
     distance_dec1 = F.cosine_similarity(feature_dec1, center, eps=1e-6)
@@ -218,6 +186,7 @@ def train(feature1, feature2, feature_dec1, feature_dec2, center, length, epoch,
     distance_dec1 = 1 - distance_dec1
     distance_dec2 = 1 - distance_dec2
 
+    # The radian loss is calculated across the representations of the four views and reconstruction
     if config.loss_type == 'arc1':
         cos1 = F.cosine_similarity(feature1 - center, feature_dec2 - center, eps=1e-6)
         cos2 = F.cosine_similarity(feature2 - center, feature_dec1 - center, eps=1e-6)
@@ -238,6 +207,7 @@ def train(feature1, feature2, feature_dec1, feature_dec2, center, length, epoch,
         else:
             loss = torch.mean(0.5 * (score1 + score2))
 
+    # The radian losses are calculated for the four views and reconstructed representations
     elif config.loss_type == 'arc2':
         cos1 = F.cosine_similarity(feature1 - center, feature_dec1 - center, eps=1e-6)
         cos2 = F.cosine_similarity(feature2 - center, feature_dec2 - center, eps=1e-6)
@@ -265,6 +235,7 @@ def train(feature1, feature2, feature_dec1, feature_dec2, center, length, epoch,
         score1 = score
         score2 = score
 
+    # The loss function used in ablation experiments
     elif config.loss_type == 'mix':
         score = distance1 + distance_dec1 + distance2 + distance_dec2
         if config.objective == 'soft-boundary':
@@ -272,10 +243,10 @@ def train(feature1, feature2, feature_dec1, feature_dec2, center, length, epoch,
             loss = length ** 2 + (1 / config.nu) * (torch.mean(torch.max(torch.zeros_like(diff), diff))) / 2
         else:
             loss = torch.mean(score)
-            # loss = score
         score1 = score
         score2 = score
 
+    # The loss function used in ablation experiments
     elif config.loss_type == 'no_reconstruction':
         score = distance1 + distance2
         if config.objective == 'soft-boundary':
@@ -287,8 +258,8 @@ def train(feature1, feature2, feature_dec1, feature_dec2, center, length, epoch,
         score1 = score
         score2 = score
 
+    # The loss function used in our paper
     else:
-        # score = 2 * distance1 + distance_dec1 + 2 * distance2 + distance_dec2
         score1 = 2 * distance1 + distance_dec1 + distance2
         score2 = 2 * distance2 + distance_dec2 + distance1
         if config.objective == 'soft-boundary':
@@ -300,9 +271,6 @@ def train(feature1, feature2, feature_dec1, feature_dec2, center, length, epoch,
                    torch.max(torch.zeros_like(diff2), diff2))) / 2
         else:
             loss = torch.mean(0.5 * (score1 + score2))
-            # loss = score
-        # score1 = score
-        # score2 = score
     return loss, score1, score2
 
 
@@ -332,17 +300,48 @@ def ad_predict1(target, scores, config):
     target = TimeSeries.from_pd(pd.DataFrame(target))
     sequence_length = config.features_len
     scores = np.array(scores)
+    # Find the maximum anomaly score in two views
     lattice = np.max(scores, axis=1)
+    # Find the maximum anomaly score in a sequence
     lattice = lattice.reshape(-1, sequence_length)
     lattice = np.max(lattice, axis=1)
     scores = lattice
+
+    # z-score standardize
     mean = np.mean(scores)
     std = np.std(scores)
-    scores = (scores - mean)/std
-    nu_list = np.arange(1, 301) / 1e3
-    f1_list, score_list = [], []
-    for detect_nu in nu_list:
-        threshold = np.percentile(scores, 100-detect_nu)
+    if std != 0:
+        scores = (scores - mean)/std
+
+    # For UCR dataset, the evaluation just checks whether the point with the highest anomaly score is anomalous or not.
+    # For UCR dataset, there is only one anomaly period in the test set.
+    if config.threshold_determine == 'one-anomaly':
+        mount = 0
+        threshold = np.max(scores, axis=0)
+        # scores_sort = np.argsort(scores, axis=0)
+        # threshold = scores[scores_sort[-9]]
+        predict = np.zeros(len(scores))
+        for index, r2 in enumerate(scores):
+            if r2.item() >= threshold:
+                predict[index] = 1
+                mount += 1
+        print(mount)
+        predict = TimeSeries.from_pd(pd.DataFrame(predict))
+        score_max = accumulate_tsad_score(ground_truth=target, predict=predict)
+        # f1_max = score_max.f1(ScoreType.RevisedPointAdjusted)
+        n_anom = score_max.num_tp_anom + score_max.num_fn_anom
+        if n_anom == 0:
+            score_max.num_tp_anom, score_max.num_fn_anom, score_max.num_fp = 0, 0, 0
+        elif score_max.num_tp_anom > 0:
+            score_max.num_tp_anom, score_max.num_fn_anom, score_max.num_fp = 1, 0, 0
+        else:
+            score_max.num_tp_anom, score_max.num_fn_anom, score_max.num_fp = 0, 1, 1
+        nu_max = 1
+
+    # Fixed threshold
+    elif config.threshold_determine == 'fix':
+        detect_nu = 100 * (1 - config.detect_nu)
+        threshold = np.percentile(scores, detect_nu)
         mount = 0
         predict = np.zeros(len(scores))
         for index, r2 in enumerate(scores):
@@ -350,15 +349,33 @@ def ad_predict1(target, scores, config):
                 predict[index] = 1
                 mount += 1
         predict = TimeSeries.from_pd(pd.DataFrame(predict))
-        score = accumulate_tsad_score(ground_truth=target, predict=predict)
-        f1 = score.f1(ScoreType.RevisedPointAdjusted)
-        f1_list.append(f1)
-        score_list.append(score)
-    index_max = np.argmax(f1_list, axis=0)
-    print(f1_list[index_max])
-    score_max = score_list[index_max]
-    nu_max = nu_list[index_max]
-    print(nu_max)
+        score_max = accumulate_tsad_score(ground_truth=target, predict=predict)
+        nu_max = detect_nu
+
+    # Floating threshold
+    else:
+        nu_list = np.arange(1, 301) / 1e3
+        f1_list, score_list = [], []
+        for detect_nu in nu_list:
+            threshold = np.percentile(scores, 100-detect_nu)
+            mount = 0
+            predict = np.zeros(len(scores))
+            for index, r2 in enumerate(scores):
+                if r2.item() > threshold:
+                    predict[index] = 1
+                    mount += 1
+            predict = TimeSeries.from_pd(pd.DataFrame(predict))
+            score = accumulate_tsad_score(ground_truth=target, predict=predict)
+            f1 = score.f1(ScoreType.RevisedPointAdjusted)
+            f1_list.append(f1)
+            score_list.append(score)
+
+        index_max = np.argmax(f1_list, axis=0)
+        # print(f1_list)
+        # print(f1_list[index_max])
+        score_max = score_list[index_max]
+        nu_max = nu_list[index_max]
+        # print(nu_max)
     return score_max, nu_max
 
 
