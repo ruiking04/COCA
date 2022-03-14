@@ -16,8 +16,8 @@ class Config(object):
         self.time_step = 1
 
         # training configs
-        # If PA F1 metric is concerned, epoch=5. If RPA F1 metric is concerned, epoch=30
-        self.num_epoch = 30
+        # If PA F1 metric is concerned, epoch=5. If RPA F1 metric is concerned, epoch>=30
+        self.num_epoch = 50
         self.freeze_length_epoch = 2
         self.change_center_epoch = 1
         self.center_beta = 0.4
