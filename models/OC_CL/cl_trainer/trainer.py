@@ -315,6 +315,8 @@ def ad_predict1(target, scores, config):
 
     # For UCR dataset, the evaluation just checks whether the point with the highest anomaly score is anomalous or not.
     # For UCR dataset, there is only one anomaly period in the test set.
+    # Make sure all time series have exactly one detection for UCR dataset (either 1 TP, or 1 FN & 1 FP).  
+    # see details: https://github.com/salesforce/Merlion/blob/main/benchmark_anomaly.py
     if config.threshold_determine == 'one-anomaly':
         mount = 0
         threshold = np.max(scores, axis=0)
