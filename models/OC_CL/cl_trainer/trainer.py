@@ -325,7 +325,6 @@ def ad_predict1(target, scores, config):
             if r2.item() >= threshold:
                 predict[index] = 1
                 mount += 1
-        print(mount)
         predict = TimeSeries.from_pd(pd.DataFrame(predict))
         score_max = accumulate_tsad_score(ground_truth=target, predict=predict)
         # f1_max = score_max.f1(ScoreType.RevisedPointAdjusted)
@@ -371,11 +370,8 @@ def ad_predict1(target, scores, config):
             score_list.append(score)
 
         index_max = np.argmax(f1_list, axis=0)
-        # print(f1_list)
-        # print(f1_list[index_max])
         score_max = score_list[index_max]
         nu_max = nu_list[index_max]
-        # print(nu_max)
     return score_max, nu_max
 
 
