@@ -31,9 +31,7 @@ parser.add_argument('--run_description', default='run1', type=str,
 parser.add_argument('--seed', default=2, type=int,
                     help='seed value')
 parser.add_argument('--weight_decay', default=5e-4, type=float,
-                    help='Weight decay (L2 penalty) hyperparameter for Deep SVDD objective')
-parser.add_argument('--objective', default='one-class', type=str,
-                    help='Specify COCA objective ("one-class" or "soft-boundary").')
+                    help='Weight decay (L2 penalty) hyperparameter for COCA objective')
 parser.add_argument('--selected_dataset', default='UCR', type=str,
                     help='Dataset of choice: NAB, IOpsCompetition, NAB, SMAP, UCR')
 parser.add_argument('--logs_save_dir', default='NAB', type=str,
