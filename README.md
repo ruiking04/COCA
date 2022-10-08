@@ -4,14 +4,18 @@ This repository provides the implementation of the _Deep Contrastive One-Class T
 The implementation uses the [Merlion](https://opensource.salesforce.com/Merlion/v1.1.0/tutorials.html) and the [Tsaug](https://tsaug.readthedocs.io/en/stable/notebook/Examples%20of%20augmenters.html) libraries.
 
 ## Abstract
-> With the accumulation of large volume time-series data, discerning novel or anomalous events, i.e., outlier, is becoming more and more important. With the scarcity of labels, anomaly detection from time-series data with temporal dynamics is a very challenging task. 
-> As a kind of unsupervised learning, contrastive self-supervised learning has been made significant progress in a variety of applications, and applying it to unlabeled time series data is promising but still open. 
-> Existing approaches are usually based on a single assumption of normality or require pre-training; they do not fully consider properties of overall normality and are limited by the quality of the representations. 
-> This paper proposes a deep Contrastive One-Class Anomaly detection of time series (COCA), combining three normality assumptions. 
-> First, to make it easier to distinguish anomalies from normal samples, the original time series data are expanded via data augmentation and then transformed into two correlated views. 
-> Second, to learn temporal dependencies which are key characteristics of time series, a powerful Seq2Seq model is used in latent space to reconstruct representations of each time step. 
-> Last, we propose a contrastive one-class loss function to build a classifier with only one stage, from which an anomaly score is defined. Extensive experiments conducted on four real-world time-series datasets show the superior performance of the proposed methods over the state-of-the-arts. 
-> The code is publicly available at https://github.com/ruiking04/COCA.
+> The accumulation of time-series data and the absence of labels make time-series Anomaly Detection (AD) a selfsupervised deep learning task.
+> Single-normality-assumptionbased methods, which reveal only a certain aspect of the whole normality, are incapable of tasks involved with a
+> large number of anomalies. Specifically, Contrastive Learning (CL) methods distance negative pairs, many of which consist of both normal 
+> samples, thus reducing the AD performance. Existing multi-normality-assumption-based methods are usually two-staged, firstly pre-training 
+> through certain tasks whose target may differ from AD, limiting their performance. To overcome the shortcomings, a deep Contrastive One-Class 
+> Anomaly detection method of time series (COCA) is proposed by authors, following the normality assumptions of CL and one-class classification. 
+> It treats the origin and reconstructed representations as the positive pair of negative-samples-free CL, namely “sequence contrast”. 
+> Next, invariance terms and variance terms compose a contrastive one-class loss function in which the loss of the assumptions is optimized 
+> by invariance terms simultaneously and the “hypersphere collapse” is prevented by variance terms. In addition, extensive experiments on two 
+> real-world time-series datasets show the superior performance of the proposed method achieves state-of-the-art.
+
+Link to arXiv version [here](https://arxiv.org/abs/2207.01472)
 ## Installation
 This code is based on `Python 3.8`, all requires are written in `requirements.txt`. Additionally, we should install `saleforce-merlion` and `ts_dataset` as [Merlion](https://github.com/salesforce/Merlion) suggested.
 
@@ -26,13 +30,36 @@ pip install -r requirements.txt
 ## Repository Structure
 
 ### `conf`
-This directory contains experiment parameters for all models on NAB, IOpsCompetition, UCR, SMAP datasets.
+This directory contains experiment parameters for all models on IOpsCompetition, UCR datasets.
 
 ### `models`
-Source code of OCSVM, DeepSVDD, CPC, TS-TCC and COCA（OC_CL） models.
+Source code of OCSVM, DeepSVDD, CPC, TS-TCC and COCA models.
 
 ### `results`
 Directory where the experiment results and checkpoint are saved.
 
+## Usage
+```
+python coca.py --selected_dataset UCR --device cuda --seed 2
+python coca.py --selected_dataset IOpsCompetition --device cuda --seed 2
+
+# COCA Variants
+python coca_no_aug.py --selected_dataset IOpsCompetition --device cuda --seed 1
+python coca_no_cl.py --selected_dataset IOpsCompetition --device cuda --seed 1
+python coca_no_oc.py --selected_dataset IOpsCompetition --device cuda --seed 1
+python coca_no_var.py --selected_dataset IOpsCompetition --device cuda --seed 1
+python coca_no_view.py --selected_dataset IOpsCompetition --device cuda --seed 1
+
+# Baseline training
+# model_name: IsolationForest, RandomCutForest, SpectralResidual, LSTMED, DAGMM, CPC, OCSVM, DeepSVDD
+python baseline.py --dataset UCR --model <model_name>  --debug
+
+# TS_TCC_AD training
+python ts_tcc_main.py --training_mode self_supervised --selected_dataset IOpsCompetition --device cuda --seed 5
+python ts_tcc_main.py --training_mode anomaly_detection --selected_dataset IOpsCompetition --device cuda --seed 5
+```
+
 ## Disclosure
-This implementation is based on [Deep-SVDD-PyTorch](https://github.com/lukasruff/Deep-SVDD-PyTorch), [Contrastive-Predictive-Coding-PyTorch](https://github.com/jefflai108/Contrastive-Predictive-Coding-PyTorch) and [TS-TCC](https://github.com/emadeldeen24/TS-TCC)
+This implementation is based on [Deep-SVDD-PyTorch](https://github.com/lukasruff/Deep-SVDD-PyTorch), 
+[Contrastive-Predictive-Coding-PyTorch](https://github.com/jefflai108/Contrastive-Predictive-Coding-PyTorch),
+[TS-TCC](https://github.com/emadeldeen24/TS-TCC), and [affiliation-metrics](https://github.com/ahstat/affiliation-metrics-py)

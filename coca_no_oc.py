@@ -6,8 +6,8 @@ from datetime import datetime
 import argparse
 from models.TS_TCC.TS_utils import _logger
 from dataloader import data_generator4
-from models.COCA.coca_trainer.trainer import Trainer
-from models.COCA.coca_network.model import base_Model
+from models.COCA.coca_trainer.trainer_no_oc import Trainer
+from models.COCA.coca_network.model_no_oc import base_Model
 from models.reasonable_metric import reasonable_accumulator
 from ts_datasets.ts_datasets.anomaly import NAB, IOpsCompetition, SMAP, SMD, UCR
 from tqdm import tqdm
@@ -27,7 +27,7 @@ parser.add_argument('--experiment_description', default='Exp1', type=str,
                     help='Experiment Description')
 parser.add_argument('--run_description', default='run1', type=str,
                     help='Experiment Description')
-parser.add_argument('--visualization', default=True, type=bool,
+parser.add_argument('--visualization', default=False, type=bool,
                     help='Visualize')
 parser.add_argument('--seed', default=2, type=int,
                     help='seed value')
@@ -47,7 +47,7 @@ args = parser.parse_args()
 device = torch.device(args.device)
 experiment_description = args.experiment_description
 data_type = args.selected_dataset
-method = 'COCA'
+method = 'COCA_no_oc'
 run_description = args.run_description
 selected_dataset = args.selected_dataset
 weight_decay = args.weight_decay
@@ -135,8 +135,6 @@ for idx in tqdm(range(len(dt))):
         print('*'*32)
         fig = plt.figure(facecolor="w", figsize=(10, 6))
         ax = fig.add_subplot(111)
-        # train_data_plot = time_series[meta_data.trainval]
-        # train_labels_plot = meta_data.anomaly[meta_data.trainval]
         test_data_plot = time_series[~meta_data.trainval]
         test_labels_plot = meta_data.anomaly[~meta_data.trainval]
         # plot time-series value
@@ -146,7 +144,7 @@ for idx in tqdm(range(len(dt))):
         if g > 1:
             y_data = y_data[:, 0]
         ax.plot(t, y_data, linewidth=1)
-        ax.set_ylabel('value', fontsize=10)
+        ax.set_ylabel('value', fontsize=16)
 
         # plot ground-truth anomaly
         t_label, y_label = test_labels_plot.index, test_labels_plot.values
@@ -156,10 +154,10 @@ for idx in tqdm(range(len(dt))):
             if y_label[splits[k]]:  # If splits[k] is anomalous
                 ax.axvspan(t[splits[k]], t[splits[k + 1]], color="#e07070", alpha=0.5)
         # plot predict anomaly score
-        predict = np.tile(predict.reshape(-1, 1), configs.time_step).flatten()
+        predict = np.tile(predict.reshape(-1, 1), configs.window_size).flatten()
         t_pred = np.arange(0, len(predict), 1)
         ax2 = ax.twinx()
-        ax2.set_ylabel('anomaly', fontsize=10)
+        ax2.set_ylabel('anomaly', fontsize=16)
         ax2.plot(t_pred, predict, linewidth=1, color='r')
         time_series_name = test_data_plot.columns[0]
         plt.title(time_series_name + '_' + str(idx))
@@ -168,9 +166,8 @@ for idx in tqdm(range(len(dt))):
         fig_origin = plt.figure(facecolor="w", figsize=(20, 12))
         ax_origin = fig_origin.add_subplot(111)
         test_score_origin = np.array(test_score_origin).reshape(-1, 1)
-        test_score_origin = np.tile(test_score_origin, configs.time_step).flatten()
+        test_score_origin = np.tile(test_score_origin, configs.window_size).flatten()
         ax_origin.plot(test_score_origin, linewidth=1)
-        plt.tight_layout()
         plt.show()
         score_item = test_score.f1(ScoreType.RevisedPointAdjusted)
         if score_item > 0:

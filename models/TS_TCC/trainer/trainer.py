@@ -7,7 +7,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .confusion_matrix import ConfusionMatrix
 from models.TS_TCC.network.loss import NTXentLoss
 
 
@@ -25,9 +24,6 @@ def Trainer(model, temporal_contr_model, model_optimizer, temp_cont_optimizer, t
         valid_loss, valid_acc, _, _ = model_evaluate(model, temporal_contr_model, valid_dl, device, training_mode)
         if training_mode != 'self_supervised':  # use scheduler in all other modes.
             scheduler.step(valid_loss)
-        # else:
-        #     valid_loss = model_evaluate1(model, temporal_contr_model, valid_dl, config, device)
-        #     test_loss = model_evaluate1(model, temporal_contr_model, test_dl, config, device)
 
         logger.debug(f'\nEpoch : {epoch}\n'
                      f'Train Loss     : {train_loss:.4f}\t | \tTrain Accuracy     : {train_acc:2.4f}\n'
@@ -35,7 +31,6 @@ def Trainer(model, temporal_contr_model, model_optimizer, temp_cont_optimizer, t
 
     os.makedirs(os.path.join(experiment_log_dir, "saved_models"), exist_ok=True)
     chkpoint = {'model_state_dict': model.state_dict(), 'temporal_contr_model_state_dict': temporal_contr_model.state_dict()}
-    # print(os.path.join(experiment_log_dir, "saved_models", f'ckp_last.pt'))
     torch.save(chkpoint, os.path.join(experiment_log_dir, "saved_models", f'ckp_last.pt'))
 
     if training_mode != "self_supervised":  # no need to run the evaluation for self-supervised mode.
@@ -149,34 +144,3 @@ def model_evaluate(model, temporal_contr_model, test_dl, device, training_mode):
     else:
         total_acc = torch.tensor(total_acc).mean()  # average acc
     return total_loss, total_acc, outs, trgs
-
-
-def model_evaluate1(model, temporal_contr_model, train_loader, config, device):
-    total_loss = []
-    for batch_idx, (data, target, aug1, aug2) in enumerate(train_loader):
-        # send to device
-        aug1, aug2 = aug1.float().to(device), aug2.float().to(device)
-        predictions1, features1 = model(aug1)
-        predictions2, features2 = model(aug2)
-
-        # normalize projection feature vectors
-        features1 = F.normalize(features1, dim=1)
-        features2 = F.normalize(features2, dim=1)
-
-        temp_cont_loss1, temp_cont_lstm_feat1 = temporal_contr_model(features1, features2)
-        temp_cont_loss2, temp_cont_lstm_feat2 = temporal_contr_model(features2, features1)
-
-        # normalize projection feature vectors
-        zis = temp_cont_lstm_feat1
-        zjs = temp_cont_lstm_feat2
-
-        # compute loss
-        lambda1 = 1
-        lambda2 = 0.7
-        nt_xent_criterion = NTXentLoss(device, config.batch_size, config.Context_Cont.temperature,
-                                       config.Context_Cont.use_cosine_similarity)
-        loss = (temp_cont_loss1 + temp_cont_loss2) * lambda1 + nt_xent_criterion(zis, zjs) * lambda2
-        total_loss.append(loss.item())
-
-    total_loss = torch.tensor(total_loss).mean()
-    return total_loss
