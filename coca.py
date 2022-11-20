@@ -33,7 +33,7 @@ parser.add_argument('--seed', default=2, type=int,
                     help='seed value')
 parser.add_argument('--weight_decay', default=5e-4, type=float,
                     help='Weight decay (L2 penalty) hyperparameter for COCA objective')
-parser.add_argument('--selected_dataset', default='UCR', type=str,
+parser.add_argument('--selected_dataset', default='IOpsCompetition', type=str,
                     help='Dataset of choice: NAB, IOpsCompetition, SMAP, UCR')
 parser.add_argument('--logs_save_dir', default='experiments_logs', type=str,
                     help='saving directory')
@@ -121,7 +121,7 @@ for idx in tqdm(range(len(dt))):
     # Trainer
     test_score_origin, test_aff, test_score, score_reasonable, predict = Trainer(model, model_optimizer, train_dl,
                                                                                  val_dl, test_dl, device, logger,
-                                                                                 configs, experiment_log_dir, idx)
+                                                                                 configs, idx)
 
     all_anomaly_num.append(test_anomaly_window_num)
     all_test_scores_reasonable.append(score_reasonable)

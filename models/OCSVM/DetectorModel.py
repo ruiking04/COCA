@@ -1,13 +1,5 @@
-import numpy as np
-import torch
-import torch.nn as nn
-from typing import Sequence
-from torch.utils.data import DataLoader
 from merlion.utils import UnivariateTimeSeries, TimeSeries
-from merlion.models.base import NormalizingConfig
-from merlion.models.anomaly.base import DetectorBase, DetectorConfig
-from merlion.post_process.threshold import AggregateAlarms
-from merlion.utils.misc import ProgressBar, initializer
+from merlion.models.anomaly.base import DetectorBase
 from merlion.models.anomaly.utils import InputData, batch_detect
 
 from .DetectorConfig import OCSVMConf
@@ -15,10 +7,7 @@ from sklearn.svm import OneClassSVM
 
 class OCSVM(DetectorBase):
     """
-    The LSTM-encoder-decoder-based multivariate time series anomaly detector.
-    The time series representation is modeled by an encoder-decoder network where
-    both encoder and decoder are LSTMs. The distribution of the reconstruction error
-    is estimated for anomaly detection.
+    The OC-SVM-based time series anomaly detector.
     """
 
     config_class = OCSVMConf

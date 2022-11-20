@@ -17,15 +17,17 @@ The implementation uses the [Merlion](https://opensource.salesforce.com/Merlion/
 
 Link to arXiv version [here](https://arxiv.org/abs/2207.01472)
 ## Installation
-This code is based on `Python 3.8`, all requires are written in `requirements.txt`. Additionally, we should install `saleforce-merlion` and `ts_dataset` as [Merlion](https://github.com/salesforce/Merlion) suggested.
+This code is based on `Python 3.8`, all requires are written in `requirements.txt`. Additionally, we should install `saleforce-merlion v1.1.1` and `ts_dataset` as [Merlion](https://github.com/salesforce/Merlion) suggested.
 
 ```
 git clone https://github.com/salesforce/Merlion.git
 cd Merlion
-pip install salesforce-merlion
+pip install salesforce-merlion==1.1.1
 pip install -e Merlion/ts_datasets/
 pip install -r requirements.txt
 ```
+The COCA repository already includes the merlion's data loading package `ts_datasets`.
+Please unzip the `data/phase2.zip` before running the program.
 
 ## Repository Structure
 

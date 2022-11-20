@@ -10,7 +10,7 @@ from models.reasonable_metric import reasonable_accumulator
 from .early_stopping import EarlyStopping
 
 sys.path.append("../../COCA")
-def Trainer(model, model_optimizer, train_dl, val_dl, test_dl, device, logger, config, experiment_log_dir, idx):
+def Trainer(model, model_optimizer, train_dl, val_dl, test_dl, device, logger, config, idx):
     # Start training
     logger.debug("Training started ....")
 

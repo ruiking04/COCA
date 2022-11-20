@@ -1,6 +1,4 @@
 from merlion.evaluate.anomaly import *
-from IPython import embed
-
 
 class reasonable_accumulator:
     def __init__(
@@ -71,14 +69,14 @@ if __name__ == '__main__':
     UCR_ts_nums = 250
     scores_reasonable = []
     for _ in range(UCR_ts_nums):
-        # 生成测试数据
+        # Generating test data
         true_test = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0])
         if random.random() < 0.3:
             pred_test = np.array([0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0])
         else:
             pred_test = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
-        # 计算reasonable metric
+        # compute reasonable metric
         score_reasonable = tsad_reasonable(true_test, pred_test, 1)
         scores_reasonable.append(score_reasonable)
 

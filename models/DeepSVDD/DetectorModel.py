@@ -1,18 +1,7 @@
-#
-# Copyright (c) 2021 salesforce.com, inc.
-# All rights reserved.
-# SPDX-License-Identifier: BSD-3-Clause
-# For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
-#
-"""
-The LSTM-encoder-decoder-based anomaly detector for multivariate time series
-"""
 import os
 import torch
 import random
 import numpy as np
-import torch.nn as nn
-from torch.utils.data import DataLoader
 from merlion.utils import UnivariateTimeSeries, TimeSeries
 from merlion.models.anomaly.base import DetectorBase
 from merlion.models.anomaly.utils import InputData, batch_detect
@@ -23,10 +12,7 @@ from .Network import DeepSVDDModule
 
 class DeepSVDD(DetectorBase):
     """
-    The LSTM-encoder-decoder-based multivariate time series anomaly detector.
-    The time series representation is modeled by an encoder-decoder network where
-    both encoder and decoder are LSTMs. The distribution of the reconstruction error
-    is estimated for anomaly detection.
+    The DeepSVDD-based time series anomaly detector.
     """
 
     config_class = DeepSVDDConf
