@@ -27,7 +27,7 @@ pip install -e Merlion/ts_datasets/
 pip install -r requirements.txt
 ```
 The COCA repository already includes the merlion's data loading package `ts_datasets`.
-Please unzip the `data/phase2.zip` before running the program.
+Please unzip the `data/iops_competition/phase2.zip` before running the program.
 
 ## Repository Structure
 
