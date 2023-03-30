@@ -182,7 +182,7 @@ def train(feature1, feature_dec1, center, length, epoch, config, device):
 
     # Prevent model collapse
     sigma_aug1 = torch.sqrt(feature1.var([0]) + 0.0001)
-    sigma_aug2 = torch.sqrt(distance_dec1.var([0]) + 0.0001)
+    sigma_aug2 = torch.sqrt(feature_dec1.var([0]) + 0.0001)
     sigma_loss1 = torch.max(torch.zeros_like(sigma_aug1), (1 - sigma_aug1))
     sigma_loss2 = torch.max(torch.zeros_like(sigma_aug2), (1 - sigma_aug2))
     loss_sigam = torch.mean((sigma_loss1 + sigma_loss2) / 2)
