@@ -45,7 +45,8 @@ class Load_Dataset(Dataset):
     def __len__(self):
         return self.len
 
-def data_generator4(train_data, test_data, train_labels, test_labels, configs):
+# Gives label values (test_y_window) by time window.
+def data_generator1(train_data, test_data, train_labels, test_labels, configs):
     train_time_series_ts = train_data
     test_time_series_ts = test_data
 
@@ -113,7 +114,8 @@ def data_generator4(train_data, test_data, train_labels, test_labels, configs):
     return train_loader, val_loader, test_loader, test_anomaly_window_num
 
 
-def data_generator5(train_data, test_data, train_labels, test_labels, configs):
+# Gives label values (test_y) by point-wise way.
+def data_generator2(train_data, test_data, train_labels, test_labels, configs):
     train_time_series_ts = train_data
     test_time_series_ts = test_data
 

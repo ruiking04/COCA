@@ -5,9 +5,9 @@ import numpy as np
 from datetime import datetime
 import argparse
 from models.TS_TCC.TS_utils import _logger
-from dataloader import data_generator4
-from models.COCA.coca_trainer.trainer_v10_view import Trainer
-from models.COCA.coca_network.model_v10_view import base_Model
+from dataloader import data_generator1
+from models.COCA.coca_trainer.trainer_view import Trainer
+from models.COCA.coca_network.model_view import base_Model
 from models.reasonable_metric import reasonable_accumulator
 from ts_datasets.ts_datasets.anomaly import NAB, IOpsCompetition, SMAP, SMD, UCR
 from tqdm import tqdm

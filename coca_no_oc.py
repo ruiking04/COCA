@@ -5,7 +5,7 @@ import numpy as np
 from datetime import datetime
 import argparse
 from models.TS_TCC.TS_utils import _logger
-from dataloader import data_generator4
+from dataloader import data_generator1
 from models.COCA.coca_trainer.trainer_no_oc import Trainer
 from models.COCA.coca_network.model_no_oc import base_Model
 from models.reasonable_metric import reasonable_accumulator
@@ -113,7 +113,7 @@ for idx in tqdm(range(len(dt))):
     # Load Model
     model = base_Model(configs, device).to(device)
     logger.debug("Data loaded ...")
-    train_dl, val_dl, test_dl, test_anomaly_window_num = data_generator4(train_data, test_data, train_labels, test_labels, configs)
+    train_dl, val_dl, test_dl, test_anomaly_window_num = data_generator1(train_data, test_data, train_labels, test_labels, configs)
 
     model_optimizer = torch.optim.Adam(model.parameters(), lr=configs.lr, betas=(configs.beta1, configs.beta2),
                                        weight_decay=weight_decay)
