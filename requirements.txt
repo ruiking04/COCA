@@ -11,4 +11,4 @@ scipy==1.7.3
 torch==1.10.2
 torchvision==0.11.3
 tqdm==4.62.3
-saleforce-merlion v1.1.1
+salesforce-merlion v1.1.1
