@@ -5,7 +5,7 @@ import numpy as np
 from datetime import datetime
 import argparse
 from models.TS_TCC.TS_utils import _logger
-from dataloader import data_generator4
+from dataloader import data_generator1
 from models.COCA.coca_trainer.trainer_no_var import Trainer
 from models.COCA.coca_network.model_no_var import base_Model
 from models.reasonable_metric import reasonable_accumulator
