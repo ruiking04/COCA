@@ -352,7 +352,8 @@ def train_model(
             df = pd.read_csv(csv)
             ts_df = train_scores.to_pd().append(test_scores.to_pd())
             ts_df.columns = ["y"]
-            ts_df.loc[:, "timestamp"] = ts_df.index.view(int) // 1e9
+            # ts_df.loc[:, "timestamp"] = ts_df.index.view(int) // 1e9
+            ts_df.loc[:, "timestamp"] = ts_df.index
             ts_df.loc[:, "trainval"] = [j < len(train_scores) for j in range(len(ts_df))]
             ts_df.loc[:, "idx"] = i
             df = df.append(ts_df, ignore_index=True)
