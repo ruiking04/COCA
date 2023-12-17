@@ -15,7 +15,23 @@ The implementation uses the [Merlion](https://opensource.salesforce.com/Merlion/
 > by invariance terms simultaneously and the “hypersphere collapse” is prevented by variance terms. In addition, extensive experiments on two 
 > real-world time-series datasets show the superior performance of the proposed method achieves state-of-the-art.
 
+
+
+## Citation
 Link to arXiv version [here](https://arxiv.org/abs/2207.01472)
+If you use this code for your research, please cite our paper:
+
+```
+@inproceedings{wang2023deep,
+  title={Deep Contrastive One-Class Time Series Anomaly Detection},
+  author={Wang, Rui and Liu, Chongwei and Mou, Xudong and Gao, Kai and Guo, Xiaohui and Liu, Pin and Wo, Tianyu and Liu, Xudong},
+  booktitle={Proceedings of the 2023 SIAM International Conference on Data Mining (SDM)},
+  pages={694--702},
+  year={2023},
+  organization={SIAM}
+}
+```
+
 ## Installation
 This code is based on `Python 3.8`, all requires are written in `requirements.txt`. Additionally, we should install `saleforce-merlion v1.1.1` and `ts_dataset` as [Merlion](https://github.com/salesforce/Merlion) suggested.
 
