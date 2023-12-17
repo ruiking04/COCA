@@ -18,7 +18,8 @@ The implementation uses the [Merlion](https://opensource.salesforce.com/Merlion/
 
 
 ## Citation
-Link to arXiv version [here](https://arxiv.org/abs/2207.01472)
+Link to arXiv version [here](https://arxiv.org/abs/2207.01472).
+
 If you use this code for your research, please cite our paper:
 
 ```
