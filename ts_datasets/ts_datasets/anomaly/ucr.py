@@ -46,9 +46,6 @@ class UCR(TSADBaseDataset):
         self.download(rootdir)
         self.time_series = sorted(
             glob.glob(
-                # os.path.join(
-                #     rootdir, "AnomalyDatasets_2021", "UCR_TimeSeriesAnomalyDatasets2021", "FilesAreInHere", "UCR_Anomaly_FullData", "*.txt"
-                # )
                 os.path.join(
                     rootdir, "UCR_TimeSeriesAnomalyDatasets2021", "FilesAreInHere", "UCR_Anomaly_FullData", "*.txt"
                 )
