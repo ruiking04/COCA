@@ -33,7 +33,7 @@ from merlion.transform.resample import TemporalResample
 from merlion.utils import TimeSeries
 from merlion.utils.resample import to_pd_datetime
 
-from ts_datasets.anomaly import *
+from ts_datasets.ts_datasets.anomaly import *
 
 import os
 import random
