@@ -40,7 +40,7 @@ This code is based on `Python 3.8`, all requires are written in `requirements.tx
 git clone https://github.com/salesforce/Merlion.git
 cd Merlion
 pip install salesforce-merlion==1.1.1
-pip install -e Merlion/ts_datasets/
+pip install IPython
 pip install -r requirements.txt
 ```
 The COCA repository already includes the merlion's data loading package `ts_datasets`.
