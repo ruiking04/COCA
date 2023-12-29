@@ -72,8 +72,7 @@ def train(args, model, device, train_loader, optimizer, epoch, batch_size):
 
 
 def snapshot(dir_path, run_name, state):
-    snapshot_file = os.path.join(dir_path,
-                                 run_name + '-model_best.pth')
-
+    # snapshot_file = os.path.join(dir_path, run_name + '-model_best.pth')
+    snapshot_file = dir_path + '/' + run_name + '-model_best.pth'
     torch.save(state, snapshot_file)
     # logger.info("Snapshot saved to {}\n".format(snapshot_file))
