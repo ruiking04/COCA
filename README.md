@@ -73,11 +73,13 @@ python coca_no_view.py --selected_dataset IOpsCompetition --device cuda --seed 1
 # model_name: IsolationForest, RandomCutForest, LSTMED, DAGMM, CPC, OCSVM, DeepSVDD
 python baseline.py --dataset UCR --model <model_name>  --debug
 # You can refer to Salesforce-Merlion's paper:  https://arxiv.org/abs/2109.09265
+# For SR-CNN, please see the paper "Time-Series Anomaly Detection Service at Microsoft", and for the source code: https://paperswithcode.com/paper/time-series-anomaly-detection-service-at#code
 
 # TS_TCC_AD training
 python ts_tcc_main.py --training_mode self_supervised --selected_dataset IOpsCompetition --device cuda --seed 5
 python ts_tcc_main.py --training_mode anomaly_detection --selected_dataset IOpsCompetition --device cuda --seed 5
 ```
+
 
 ## Disclosure
 This implementation is based on [Deep-SVDD-PyTorch](https://github.com/lukasruff/Deep-SVDD-PyTorch), 
