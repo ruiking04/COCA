@@ -70,8 +70,9 @@ python coca_no_var.py --selected_dataset IOpsCompetition --device cuda --seed 1
 python coca_no_view.py --selected_dataset IOpsCompetition --device cuda --seed 1
 
 # Baseline training
-# model_name: IsolationForest, RandomCutForest, SpectralResidual, LSTMED, DAGMM, CPC, OCSVM, DeepSVDD
+# model_name: IsolationForest, RandomCutForest, LSTMED, DAGMM, CPC, OCSVM, DeepSVDD
 python baseline.py --dataset UCR --model <model_name>  --debug
+You can refer to Salesforce-Merlion's paper:  https://arxiv.org/abs/2109.09265
 
 # TS_TCC_AD training
 python ts_tcc_main.py --training_mode self_supervised --selected_dataset IOpsCompetition --device cuda --seed 5
