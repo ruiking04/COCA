@@ -69,7 +69,5 @@ python coca_no_oc.py --selected_dataset IOpsCompetition --device cuda --seed 1
 python coca_no_var.py --selected_dataset IOpsCompetition --device cuda --seed 1
 python coca_no_view.py --selected_dataset IOpsCompetition --device cuda --seed 1
 
-
-
 ## Disclosure
-This implementation is based on [affiliation-metrics](https://github.com/ahstat/affiliation-metrics-py)
+This implementation is based on affiliation-metrics(https://github.com/ahstat/affiliation-metrics-py).
