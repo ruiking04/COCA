@@ -59,15 +59,15 @@ Directory where the experiment results and checkpoint are saved.
 
 ## Usage
 ```
-python coca.py --selected_dataset UCR --device cuda --seed 2
-python coca.py --selected_dataset IOpsCompetition --device cuda --seed 2
+python coca.py --selected_dataset UCR --selected_model COCA --device cuda --seed 2
+python coca.py --selected_dataset IOpsCompetition --selected_model COCA --device cuda --seed 2
 
 # COCA Variants
-python coca_no_aug.py --selected_dataset IOpsCompetition --device cuda --seed 1
-python coca_no_cl.py --selected_dataset IOpsCompetition --device cuda --seed 1
-python coca_no_oc.py --selected_dataset IOpsCompetition --device cuda --seed 1
-python coca_no_var.py --selected_dataset IOpsCompetition --device cuda --seed 1
-python coca_no_view.py --selected_dataset IOpsCompetition --device cuda --seed 1
+python coca.py --selected_dataset IOpsCompetition --selected_model COCA_no_aug --device cuda --seed 2
+python coca.py --selected_dataset IOpsCompetition --selected_model COCA_no_cl --device cuda --seed 2
+python coca.py --selected_dataset IOpsCompetition --selected_model COCA_no_oc --device cuda --seed 2
+python coca.py --selected_dataset IOpsCompetition --selected_model COCA_no_var --device cuda --seed 2
+python coca.py --selected_dataset IOpsCompetition --selected_model COCA_view --device cuda --seed 2
 ```
 ## Disclosure
 This implementation is based on [affiliation-metrics](https://github.com/ahstat/affiliation-metrics-py).
