@@ -33,7 +33,7 @@ parser.add_argument('--weight_decay', default=5e-4, type=float,
                     help='Weight decay (L2 penalty) hyperparameter for COCA objective')
 parser.add_argument('--selected_dataset', default='UCR', type=str,
                     help='Dataset of choice: NAB, IOpsCompetition, SMAP, UCR')
-parser.add_argument('--selected_model', default='COCA_view', type=str,
+parser.add_argument('--selected_model', default='COCA', type=str,
                     help='Model of choice: COCA, COCA_no_aug, COCA_no_cl, COCA_no_oc, COCA_no_var, COCA_view,')
 parser.add_argument('--device', default='cpu', type=str,
                     help='cpu or cuda')
