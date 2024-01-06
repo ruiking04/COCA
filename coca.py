@@ -2,12 +2,10 @@ import torch
 
 import os
 import numpy as np
+import pandas as pd
 from datetime import datetime
 import argparse
-from models.TS_TCC.TS_utils import _logger
 from dataloader import data_generator1
-from models.COCA.coca_trainer.trainer import Trainer
-from models.COCA.coca_network.model import base_Model
 from models.reasonable_metric import reasonable_accumulator
 from ts_datasets.ts_datasets.anomaly import NAB, IOpsCompetition, SMAP, SMD, UCR
 from tqdm import tqdm
@@ -33,10 +31,10 @@ parser.add_argument('--seed', default=2, type=int,
                     help='seed value')
 parser.add_argument('--weight_decay', default=5e-4, type=float,
                     help='Weight decay (L2 penalty) hyperparameter for COCA objective')
-parser.add_argument('--selected_dataset', default='IOpsCompetition', type=str,
+parser.add_argument('--selected_dataset', default='UCR', type=str,
                     help='Dataset of choice: NAB, IOpsCompetition, SMAP, UCR')
-parser.add_argument('--logs_save_dir', default='experiments_logs', type=str,
-                    help='saving directory')
+parser.add_argument('--selected_model', default='COCA_view', type=str,
+                    help='Model of choice: COCA, COCA_no_aug, COCA_no_cl, COCA_no_oc, COCA_no_var, COCA_view,')
 parser.add_argument('--device', default='cpu', type=str,
                     help='cpu or cuda')
 parser.add_argument('--home_path', default=home_dir, type=str,
@@ -47,15 +45,30 @@ args = parser.parse_args()
 device = torch.device(args.device)
 experiment_description = args.experiment_description
 data_type = args.selected_dataset
-method = 'COCA'
+method = args.selected_model
 run_description = args.run_description
 selected_dataset = args.selected_dataset
 weight_decay = args.weight_decay
 visualization = args.visualization
 
-logs_save_dir = args.logs_save_dir
-os.makedirs(logs_save_dir, exist_ok=True)
-
+if method == 'COCA_no_aug':
+    from models.COCA.coca_trainer.trainer_no_aug import Trainer
+    from models.COCA.coca_network.model_no_aug import base_Model
+elif method == 'COCA_no_cl':
+    from models.COCA.coca_trainer.trainer_no_cl import Trainer
+    from models.COCA.coca_network.model_no_cl import base_Model
+elif method == 'COCA_no_oc':
+    from models.COCA.coca_trainer.trainer_no_oc import Trainer
+    from models.COCA.coca_network.model_no_oc import base_Model
+elif method == 'COCA_no_var':
+    from models.COCA.coca_trainer.trainer_no_var import Trainer
+    from models.COCA.coca_network.model_no_var import base_Model
+elif method == 'COCA_view':
+    from models.COCA.coca_trainer.trainer_view import Trainer
+    from models.COCA.coca_network.model_view import base_Model
+else:
+    from models.COCA.coca_trainer.trainer import Trainer
+    from models.COCA.coca_network.model import base_Model
 
 exec(f'from conf.coca.{data_type}_Configs import Config as Configs')
 configs = Configs()
@@ -63,18 +76,11 @@ configs = Configs()
 # ##### fix random seeds for reproducibility ########
 SEED = args.seed
 
-experiment_log_dir = os.path.join(logs_save_dir, experiment_description, run_description, f"_seed_{SEED}")
-os.makedirs(experiment_log_dir, exist_ok=True)
+print("=" * 45)
+print(f'Dataset: {data_type}')
+print(f'Method:  {method}')
+print("=" * 45)
 
-# Logging
-log_file_name = os.path.join(experiment_log_dir, f"logs_{datetime.now().strftime('%d_%m_%Y_%H_%M_%S')}.log")
-logger = _logger(log_file_name)
-logger.debug("=" * 45)
-logger.debug(f'Dataset: {data_type}')
-logger.debug(f'Method:  {method}')
-logger.debug("=" * 45)
-
-log_dir = experiment_log_dir
 # Load datasets
 if selected_dataset == 'NAB':
     dt = NAB()
@@ -87,20 +93,18 @@ elif selected_dataset == 'UCR':
 else:
     dt = SMD()
 
-# Get the lead & lag time for the dataset
-early, delay = dt.max_lead_sec, dt.max_lag_sec
 # Aggregate statistics from full dataset
 all_anomaly_num, all_test_score, all_test_scores_reasonable = [], [], []
 all_test_aff_score, all_test_aff_precision, all_test_aff_recall = [], [], []
-detect_list = np.zeros(len(dt))
-for idx in tqdm(range(len(dt))):
+
+model_num = len(dt)
+detect_list = np.zeros(model_num)
+for idx in tqdm(range(model_num)):
     torch.manual_seed(SEED)
     torch.backends.cudnn.deterministic = False
     torch.backends.cudnn.benchmark = False
     np.random.seed(SEED)
 
-    logger.debug(str(idx)+"time series")
-    experiment_log_dir = os.path.join(log_dir, selected_dataset, '_' + str(idx))
     time_series, meta_data = dt[idx]
     train_data = TimeSeries.from_pd(time_series[meta_data.trainval])
     test_data = TimeSeries.from_pd(time_series[~meta_data.trainval])
@@ -112,7 +116,7 @@ for idx in tqdm(range(len(dt))):
 
     # Load Model
     model = base_Model(configs, device).to(device)
-    logger.debug("Data loaded ...")
+    print("Data loaded ...")
     train_dl, val_dl, test_dl, test_anomaly_window_num = data_generator1(train_data, test_data, train_labels, test_labels, configs)
 
     model_optimizer = torch.optim.Adam(model.parameters(), lr=configs.lr, betas=(configs.beta1, configs.beta2),
@@ -120,7 +124,7 @@ for idx in tqdm(range(len(dt))):
 
     # Trainer
     test_score_origin, test_aff, test_score, score_reasonable, predict = Trainer(model, model_optimizer, train_dl,
-                                                                                 val_dl, test_dl, device, logger,
+                                                                                 val_dl, test_dl, device,
                                                                                  configs, idx)
 
     all_anomaly_num.append(test_anomaly_window_num)
@@ -197,6 +201,8 @@ test_aff_f1 = 2 * (test_aff_precision * test_aff_recall) / (test_aff_precision +
 
 total_test_score = sum(all_test_score, ScoreAcc())
 total_test_scores_reasonable = sum(all_test_scores_reasonable, reasonable_accumulator())
+ucr_accuracy = total_test_scores_reasonable.get_all_metrics()
+
 print(total_test_scores_reasonable.get_all_metrics())
 print('>' * 32)
 if configs.dataset == 'UCR':
@@ -221,6 +227,39 @@ print("affiliation metrics:\n",
       "seed:", SEED, "\n"
       "config setup:\n"
       )
-print_object(configs)
-print_object(configs.augmentation)
-logger.debug(f"Training time is : {datetime.now()-start_time}")
+str_conf = print_object(configs)
+train_time = datetime.now()-start_time
+print(f"Training time is : {train_time}")
+
+path = "./results"
+if not os.path.exists(path):
+    os.makedirs(path)
+summary = os.path.join("results", f"{method}_{selected_dataset}_summary.csv")
+if os.path.exists(summary):
+    df = pd.read_csv(summary, index_col=0)
+else:
+    df = pd.DataFrame()
+model_name = method + f"{df.shape[1]}"
+
+df.loc["Hyper-parameter", model_name] = str_conf
+df.loc["seed", model_name] = SEED
+df.loc["Train Time", model_name] = train_time
+df.loc["UCR Accuracy", model_name] = round(ucr_accuracy["accuracy"], 5)
+df.loc["Affiliation Precision", model_name] = round(test_aff_precision, 5)
+df.loc["Affiliation Recall", model_name] = round(test_aff_recall, 5)
+df.loc["Affiliation F1", model_name] = round(test_aff_f1, 5)
+df.loc["RPA Precision", model_name] = round(total_test_score.precision(ScoreType.RevisedPointAdjusted), 5)
+df.loc["RPA Recall", model_name] = round(total_test_score.recall(ScoreType.RevisedPointAdjusted), 5)
+df.loc["RPA F1", model_name] = round(total_test_score.f1(ScoreType.RevisedPointAdjusted), 5)
+df.loc["PA Precision", model_name] = round(total_test_score.precision(ScoreType.PointAdjusted), 5)
+df.loc["PA Recall", model_name] = round(total_test_score.recall(ScoreType.PointAdjusted), 5)
+df.loc["PA F1", model_name] = round(total_test_score.f1(ScoreType.PointAdjusted), 5)
+df.loc["Point-wise Precision", model_name] = round(total_test_score.precision(ScoreType.Pointwise), 5)
+df.loc["Point-wise Recall", model_name] = round(total_test_score.recall(ScoreType.Pointwise), 5)
+df.loc["Point-wise F1", model_name] = round(total_test_score.f1(ScoreType.Pointwise), 5)
+df.loc["NAB Score (balanced)", model_name] = round(total_test_score.nab_score(), 5)
+df.loc["NAB Score (high precision)", model_name] = round(total_test_score.nab_score(fp_weight=0.22), 5)
+df.loc["NAB Score (high recall)", model_name] = round(total_test_score.nab_score(fn_weight=2.0), 5)
+
+
+df.to_csv(summary, index=True)
