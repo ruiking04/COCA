@@ -10,9 +10,9 @@ from models.reasonable_metric import reasonable_accumulator
 from .early_stopping import EarlyStopping
 
 sys.path.append("../../COCA")
-def Trainer(model, model_optimizer, train_dl, val_dl, test_dl, device, logger, config, experiment_log_dir, idx):
+def Trainer(model, model_optimizer, train_dl, val_dl, test_dl, device, config, idx):
     # Start training
-    logger.debug("Training started ....")
+    print("Training started ....")
 
     save_path = "./best_network/" + config.dataset
     os.makedirs(save_path, exist_ok=True)
@@ -37,7 +37,7 @@ def Trainer(model, model_optimizer, train_dl, val_dl, test_dl, device, logger, c
         if epoch < config.change_center_epoch:
             center = center_c(train_dl, model, device, center, config, eps=config.center_eps)
         scheduler.step(train_loss)
-        logger.debug(f'\nEpoch : {epoch}\n'
+        print(f'\nEpoch : {epoch}\n'
                      f'Train Loss     : {train_loss:.4f}\t | \n'
                      f'Valid Loss     : {val_loss:.4f}\t  | \n'
                      f'Test Loss     : {test_loss:.4f}\t  | \n'
@@ -54,27 +54,27 @@ def Trainer(model, model_optimizer, train_dl, val_dl, test_dl, device, logger, c
             test_precision = test_score.precision(ScoreType.RevisedPointAdjusted)
             test_recall = test_score.recall(ScoreType.RevisedPointAdjusted)
             print("Test accuracy metrics")
-            logger.debug(
+            print(
                 f'Test accuracy: {score_reasonable.correct_num:2.4f}\n')
             early_stopping(score_reasonable, test_affiliation, test_score, model)
             print("Test affiliation-metrics")
-            logger.debug(
+            print(
                 f'Test precision: {test_affiliation["precision"]:2.4f}  | \tTest recall: {test_affiliation["recall"]:2.4f}\n')
             print("Test RAP F1")
-            logger.debug(
+            print(
                 f'Test F1: {test_f1:2.4f}  | \tTest precision: {test_precision:2.4f}  | \tTest recall: {test_recall:2.4f}\n')
             if early_stopping.early_stop:
                 print("Early stopping")
                 break
 
-    logger.debug("\n################## Training is Done! #########################")
+    print("\n################## Training is Done! #########################")
     # according to scores to create predicting labels
     if config.dataset == 'UCR':
         score_reasonable = early_stopping.best_score
         test_affiliation = early_stopping.best_affiliation
         test_score = early_stopping.best_rpa_score
         print("Test accuracy metrics")
-        logger.debug(
+        print(
             f'Test accuracy: {score_reasonable.correct_num:2.4f}\n')
     else:
         val_affiliation, val_score, _ = ad_predict(val_target, val_score_origin, config.threshold_determine,
@@ -86,19 +86,19 @@ def Trainer(model, model_optimizer, train_dl, val_dl, test_dl, device, logger, c
     val_precision = val_score.precision(ScoreType.RevisedPointAdjusted)
     val_recall = val_score.recall(ScoreType.RevisedPointAdjusted)
     print("Valid affiliation-metrics")
-    logger.debug(
+    print(
         f'Test precision: {val_affiliation["precision"]:2.4f}  | \tTest recall: {val_affiliation["recall"]:2.4f}\n')
     print("Valid RAP F1")
-    logger.debug(f'Valid F1: {val_f1:2.4f}  | \tValid precision: {val_precision:2.4f}  | \tValid recall: {val_recall:2.4f}\n')
+    print(f'Valid F1: {val_f1:2.4f}  | \tValid precision: {val_precision:2.4f}  | \tValid recall: {val_recall:2.4f}\n')
 
     test_f1 = test_score.f1(ScoreType.RevisedPointAdjusted)
     test_precision = test_score.precision(ScoreType.RevisedPointAdjusted)
     test_recall = test_score.recall(ScoreType.RevisedPointAdjusted)
     print("Test affiliation-metrics")
-    logger.debug(
+    print(
         f'Test precision: {test_affiliation["precision"]:2.4f}  | \tTest recall: {test_affiliation["recall"]:2.4f}\n')
     print("Test RAP F1")
-    logger.debug(f'Test F1: {test_f1:2.4f}  | \tTest precision: {test_precision:2.4f}  | \tTest recall: {test_recall:2.4f}\n')
+    print(f'Test F1: {test_f1:2.4f}  | \tTest precision: {test_precision:2.4f}  | \tTest recall: {test_recall:2.4f}\n')
 
     return test_score_origin, test_affiliation, test_score, score_reasonable, predict
 
@@ -216,6 +216,5 @@ def get_radius(dist: torch.Tensor, nu: float):
     # return np.quantile(np.sqrt(dist.clone().data.cpu().numpy()), 1 - nu)
     dist = dist.reshape(-1)
     return np.quantile(dist.clone().data.cpu().numpy(), 1 - nu)
-
 
 
