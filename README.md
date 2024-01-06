@@ -4,7 +4,7 @@ This repository provides the implementation of the _Deep Contrastive One-Class T
 The implementation uses the [Merlion](https://opensource.salesforce.com/Merlion/v1.1.0/tutorials.html) and the [Tsaug](https://tsaug.readthedocs.io/en/stable/notebook/Examples%20of%20augmenters.html) libraries.
 
 ## Abstract
-> The accumulation of time-series data and the absence of labels make time-series Anomaly Detection (AD) a selfsupervised deep learning task.
+> The accumulation of time-series data and the absence of labels make time-series Anomaly Detection (AD) a self-supervised deep learning task.
 > Single-normality-assumptionbased methods, which reveal only a certain aspect of the whole normality, are incapable of tasks involved with a
 > large number of anomalies. Specifically, Contrastive Learning (CL) methods distance negative pairs, many of which consist of both normal 
 > samples, thus reducing the AD performance. Existing multi-normality-assumption-based methods are usually two-staged, firstly pre-training 
@@ -34,7 +34,7 @@ If you use this code for your research, please cite our paper:
 ```
 
 ## Installation
-This code is based on `Python 3.8`, all requires are written in `requirements.txt`. Additionally, we should install `saleforce-merlion v1.1.1` and `ts_dataset` as [Merlion](https://github.com/salesforce/Merlion) suggested.
+This code is based on `Python 3.8`, all requirements are written in `requirements.txt`. Additionally, we should install `saleforce-merlion v1.1.1` and `ts_dataset` as [Merlion](https://github.com/salesforce/Merlion) suggested.
 
 ```
 git clone https://github.com/salesforce/Merlion.git
@@ -52,7 +52,7 @@ Please unzip the `data/iops_competition/phase2.zip` before running the program.
 This directory contains experiment parameters for all models on IOpsCompetition, UCR datasets.
 
 ### `models`
-Source code of OCSVM, DeepSVDD, CPC, TS-TCC and COCA models.
+Source code of COCA model.
 
 ### `results`
 Directory where the experiment results and checkpoint are saved.
@@ -69,19 +69,7 @@ python coca_no_oc.py --selected_dataset IOpsCompetition --device cuda --seed 1
 python coca_no_var.py --selected_dataset IOpsCompetition --device cuda --seed 1
 python coca_no_view.py --selected_dataset IOpsCompetition --device cuda --seed 1
 
-# Baseline training
-# model_name: IsolationForest, RandomCutForest, LSTMED, DAGMM, CPC, OCSVM, DeepSVDD
-python baseline.py --dataset UCR --model <model_name>  --debug
-# You can refer to Salesforce-Merlion's paper:  https://arxiv.org/abs/2109.09265
-# For SR-CNN, please see the paper "Time-Series Anomaly Detection Service at Microsoft", and for the source code: https://paperswithcode.com/paper/time-series-anomaly-detection-service-at#code
-
-# TS_TCC_AD training
-python ts_tcc_main.py --training_mode self_supervised --selected_dataset IOpsCompetition --device cuda --seed 5
-python ts_tcc_main.py --training_mode anomaly_detection --selected_dataset IOpsCompetition --device cuda --seed 5
-```
 
 
 ## Disclosure
-This implementation is based on [Deep-SVDD-PyTorch](https://github.com/lukasruff/Deep-SVDD-PyTorch), 
-[Contrastive-Predictive-Coding-PyTorch](https://github.com/jefflai108/Contrastive-Predictive-Coding-PyTorch),
-[TS-TCC](https://github.com/emadeldeen24/TS-TCC), and [affiliation-metrics](https://github.com/ahstat/affiliation-metrics-py)
+This implementation is based on [affiliation-metrics](https://github.com/ahstat/affiliation-metrics-py)
