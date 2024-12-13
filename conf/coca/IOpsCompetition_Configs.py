@@ -9,7 +9,7 @@ class Config(object):
         self.final_out_channels = 32
         self.hidden_size = 64
         self.num_layers = 3
-        self.project_channels = 20
+        self.project_channels = 16
 
         self.dropout = 0.45
         self.features_len = 6
