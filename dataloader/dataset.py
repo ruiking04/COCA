@@ -51,7 +51,7 @@ def data_generator1(train_data, test_data, train_labels, test_labels, configs):
     test_time_series_ts = test_data
 
     mvn = MeanVarNormalize()
-    mvn.train(train_time_series_ts + test_time_series_ts)
+    mvn.train(train_time_series_ts)
     bias, scale = mvn.bias, mvn.scale
     train_time_series = train_time_series_ts.to_pd().to_numpy()
     train_time_series = (train_time_series-bias)/scale
