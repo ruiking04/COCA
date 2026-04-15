@@ -7,7 +7,6 @@ from merlion.evaluate.anomaly import ScoreType
 from models import ad_predict
 from models.reasonable_metric import tsad_reasonable
 from models.reasonable_metric import reasonable_accumulator
-from .early_stopping import EarlyStopping
 
 sys.path.append("../../COCA")
 def Trainer(model, model_optimizer, train_dl, val_dl, test_dl, device, config, idx):
@@ -43,28 +42,6 @@ def Trainer(model, model_optimizer, train_dl, val_dl, test_dl, device, config, i
                      )
         all_epoch_train_loss.append(train_loss.item())
         all_epoch_test_loss.append(val_loss.item())
-        if config.dataset == 'UCR':
-            val_affiliation, val_score, _ = ad_predict(val_target, val_score_origin, config.threshold_determine,
-                                                       config.detect_nu)
-            test_affiliation, test_score, predict = ad_predict(test_target, test_score_origin,
-                                                               config.threshold_determine, config.detect_nu)
-            score_reasonable = tsad_reasonable(test_target, predict, config.time_step)
-            test_f1 = test_score.f1(ScoreType.RevisedPointAdjusted)
-            test_precision = test_score.precision(ScoreType.RevisedPointAdjusted)
-            test_recall = test_score.recall(ScoreType.RevisedPointAdjusted)
-            print("Test accuracy metrics")
-            print(
-                f'Test accuracy: {score_reasonable.correct_num:2.4f}\n')
-            early_stopping(score_reasonable, test_affiliation, test_score, model)
-            print("Test affiliation-metrics")
-            print(
-                f'Test precision: {test_affiliation["precision"]:2.4f}  | \tTest recall: {test_affiliation["recall"]:2.4f}\n')
-            print("Test RAP F1")
-            print(
-                f'Test F1: {test_f1:2.4f}  | \tTest precision: {test_precision:2.4f}  | \tTest recall: {test_recall:2.4f}\n')
-            if early_stopping.early_stop:
-                print("Early stopping")
-                break
 
     print("\n################## Training is Done! #########################")
     # according to scores to create predicting labels

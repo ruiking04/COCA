@@ -34,7 +34,7 @@ parser.add_argument('--weight_decay', default=5e-4, type=float,
 parser.add_argument('--selected_dataset', default='UCR', type=str,
                     help='Dataset of choice: NAB, IOpsCompetition, SMAP, UCR')
 parser.add_argument('--selected_model', default='COCA', type=str,
-                    help='Model of choice: COCA, COCA_no_aug, COCA_no_cl, COCA_no_oc, COCA_no_var, COCA_view,')
+                    help='Model of choice: COCA')
 parser.add_argument('--device', default='cpu', type=str,
                     help='cpu or cuda')
 parser.add_argument('--home_path', default=home_dir, type=str,
@@ -45,30 +45,14 @@ args = parser.parse_args()
 device = torch.device(args.device)
 experiment_description = args.experiment_description
 data_type = args.selected_dataset
-method = args.selected_model
 run_description = args.run_description
 selected_dataset = args.selected_dataset
 weight_decay = args.weight_decay
 visualization = args.visualization
+method = args.selected_model
 
-if method == 'COCA_no_aug':
-    from models.COCA.coca_trainer.trainer_no_aug import Trainer
-    from models.COCA.coca_network.model_no_aug import base_Model
-elif method == 'COCA_no_cl':
-    from models.COCA.coca_trainer.trainer_no_cl import Trainer
-    from models.COCA.coca_network.model_no_cl import base_Model
-elif method == 'COCA_no_oc':
-    from models.COCA.coca_trainer.trainer_no_oc import Trainer
-    from models.COCA.coca_network.model_no_oc import base_Model
-elif method == 'COCA_no_var':
-    from models.COCA.coca_trainer.trainer_no_var import Trainer
-    from models.COCA.coca_network.model_no_var import base_Model
-elif method == 'COCA_view':
-    from models.COCA.coca_trainer.trainer_view import Trainer
-    from models.COCA.coca_network.model_view import base_Model
-else:
-    from models.COCA.coca_trainer.trainer import Trainer
-    from models.COCA.coca_network.model import base_Model
+from models.COCA.coca_trainer.trainer import Trainer
+from models.COCA.coca_network.model import base_Model
 
 exec(f'from conf.coca.{data_type}_Configs import Config as Configs')
 configs = Configs()

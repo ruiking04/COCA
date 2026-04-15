@@ -54,6 +54,13 @@ This directory contains experiment parameters for all models on IOpsCompetition,
 ### `models`
 Source code of COCA model.
 
+It should be noted that the UCR dataset is highly diverse, 
+with 250 subsets covering various fields such as healthcare, industry, astronomy, and others. 
+Each subset has a different data distribution, resulting in varying hyperparameters, 
+especially the number of epochs, which requires tuning for each subset individually. 
+In this paper, we keep all other hyperparameters fixed and search for the optimal number of 
+epochs within the range of epoch ≤ 50.
+
 ### `results`
 Directory where the experiment results and checkpoint are saved.
 
