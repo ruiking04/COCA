@@ -58,6 +58,7 @@ It should be noted that the UCR dataset is highly diverse,
 with 250 subsets covering various fields such as healthcare, industry, astronomy, and others. 
 Each subset has a different data distribution, resulting in varying hyperparameters, 
 especially the number of epochs, which requires tuning for each subset individually. 
+Furthermore, the test set contains only one anomalous segment, making it difficult to split a validation set from it.
 In this paper, we keep all other hyperparameters fixed and search for the optimal number of 
 epochs within the range of epoch ≤ 50.
 

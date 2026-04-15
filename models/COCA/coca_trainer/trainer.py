@@ -15,7 +15,6 @@ def Trainer(model, model_optimizer, train_dl, val_dl, test_dl, device, config, i
 
     save_path = "./best_network/" + config.dataset
     os.makedirs(save_path, exist_ok=True)
-    early_stopping = EarlyStopping(save_path, idx)
 
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(model_optimizer, 'min')
     all_epoch_train_loss, all_epoch_test_loss = [], []
