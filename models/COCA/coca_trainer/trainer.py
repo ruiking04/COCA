@@ -44,19 +44,11 @@ def Trainer(model, model_optimizer, train_dl, val_dl, test_dl, device, config, i
 
     print("\n################## Training is Done! #########################")
     # according to scores to create predicting labels
-    if config.dataset == 'UCR':
-        score_reasonable = early_stopping.best_score
-        test_affiliation = early_stopping.best_affiliation
-        test_score = early_stopping.best_rpa_score
-        print("Test accuracy metrics")
-        print(
-            f'Test accuracy: {score_reasonable.correct_num:2.4f}\n')
-    else:
-        val_affiliation, val_score, _ = ad_predict(val_target, val_score_origin, config.threshold_determine,
-                                                   config.detect_nu)
-        test_affiliation, test_score, predict = ad_predict(test_target, test_score_origin, config.threshold_determine,
-                                                           config.detect_nu)
-        score_reasonable = reasonable_accumulator(1, 0)
+    val_affiliation, val_score, _ = ad_predict(val_target, val_score_origin, config.threshold_determine,
+                                               config.detect_nu)
+    test_affiliation, test_score, predict = ad_predict(test_target, test_score_origin, config.threshold_determine,
+                                                       config.detect_nu)
+    score_reasonable = reasonable_accumulator(1, 0)
     val_f1 = val_score.f1(ScoreType.RevisedPointAdjusted)
     val_precision = val_score.precision(ScoreType.RevisedPointAdjusted)
     val_recall = val_score.recall(ScoreType.RevisedPointAdjusted)
@@ -74,13 +66,6 @@ def Trainer(model, model_optimizer, train_dl, val_dl, test_dl, device, config, i
         f'Test precision: {test_affiliation["precision"]:2.4f}  | \tTest recall: {test_affiliation["recall"]:2.4f}\n')
     print("Test RAP F1")
     print(f'Test F1: {test_f1:2.4f}  | \tTest precision: {test_precision:2.4f}  | \tTest recall: {test_recall:2.4f}\n')
-
-    # writer = SummaryWriter()
-    # for i in range(config.num_epoch):
-    #     writer.add_scalars('loss', {'train': all_epoch_train_loss[i],
-    #                                 'test': all_epoch_test_loss[i]}, i)
-    # # writer.add_embedding(part_embedding_feature, metadata=part_embedding_target, tag='test embedding')
-    # writer.close()
 
     return test_score_origin, test_affiliation, test_score, score_reasonable, predict
 
